@@ -382,7 +382,7 @@ const Page = () => {
       <section>
         {/* for desktop */}
         {Array.isArray(otherProducts) && otherProducts.length > 0 ? (
-          <h2 className="text-2xl font-bold mx-3">More Products Like This</h2>
+          <h2 className="text-2xl font-bold mx-3">You May Like This</h2>
         ) : (
           ""
         )}

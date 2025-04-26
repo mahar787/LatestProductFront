@@ -6,6 +6,7 @@ import AdminCheck from "./components/Admincheck";
 import WAButton from "./components/WAButton";
 import FeaturesSection from "./components/FeatureSection";
 import Footer from "./components/Footer";
+import { ReduxProvider } from "./redux/provider";
 // import { usePathname } from "next/navigation";
 
 const inter = Inter({
@@ -35,11 +36,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} overflow-x-hidden antialiased`}>
+      <body className={`${inter.variable} overflow-x-hidden  antialiased`}>
         <AdminCheck>
           <Header />
         </AdminCheck>
-        {children}
+        <ReduxProvider>{children}</ReduxProvider>
         <AdminCheck>
           <WAButton />
           <FeaturesSection />

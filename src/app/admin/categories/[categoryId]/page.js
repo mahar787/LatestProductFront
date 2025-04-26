@@ -78,6 +78,7 @@ export default function UpdateCategoryForm() {
 
     const result = await response.json();
     setApiResponse(result.message);
+    console.log("rr", result);
     setLoading(false);
   };
 

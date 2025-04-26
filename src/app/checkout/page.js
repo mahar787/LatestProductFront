@@ -4,6 +4,14 @@ import { useForm } from "react-hook-form";
 import postReq from "../utilities/postReq";
 import { useRouter } from "next/navigation";
 import getReq from "../utilities/getReq";
+import { useDispatch } from "react-redux";
+import {
+  addToCart,
+  setAddress,
+  setPaymentMethod,
+  setTotalAmount,
+  setDeliveryCharge,
+} from "../redux/slices/cardCheckoutSlice";
 const CheckoutPage = () => {
   const {
     register,
@@ -11,6 +19,7 @@ const CheckoutPage = () => {
     formState: { errors },
   } = useForm();
   const router = useRouter();
+  const dispatch = useDispatch();
   const [selectedPayment, setSelectedPayment] = useState("credit");
   const [cartItems, setCartItems] = useState([]);
   const [products, setProducts] = useState([]);
@@ -82,38 +91,61 @@ const CheckoutPage = () => {
   }, []);
 
   const onSubmit = async (data) => {
-    setLoading(true);
-    const orderData = {
-      ...data,
-      paymentMethod: selectedPayment,
-      cartItems,
-      deliveryCharges,
-      totalAmount: grandTotal,
-    };
+    if (selectedPayment === "cash") {
+      setLoading(true);
+      const orderData = {
+        ...data,
+        paymentMethod: selectedPayment,
+        cartItems,
+        deliveryCharges,
+        totalAmount: grandTotal,
+      };
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/create-payment-intent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: orderData }),
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_DOMAIN_URL}/api/create-payment-intent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ data: orderData }),
+        }
+      );
+
+      const session = await res.json();
+      if (session.cash) {
+        // window.alert(session.message);
+        // localStorage.removeItem("cart");
+
+        router.push(`/Rec?orderId=${session.orderId}`);
+        // router.push("/");
+        setLoading(false);
       }
-    );
-
-    const session = await res.json();
-    if (session.cash) {
-      window.alert(session.message);
-      localStorage.removeItem("cart");
-      router.push("/");
-      setLoading(false);
     }
-    if (session.card) {
-      router.push(`/checkout/uploadScreenshot?orderId=${session.id}`);
+    if (selectedPayment === "credit") {
+      // const orderData = {
+      //   ...data,
+      //   paymentMethod: selectedPayment,
+      //   cartItems,
+      //   deliveryCharges,
+      //   totalAmount: grandTotal,
+      // };
+      console.log("check for redux", data);
+      console.log("check for redux", selectedPayment);
+      console.log("check for redux", cartItems);
+      console.log("check for redux", deliveryCharges);
+      console.log("check for redux", grandTotal);
+      dispatch(setAddress(data));
+      dispatch(setPaymentMethod(selectedPayment));
+      dispatch(addToCart(cartItems));
+      dispatch(setDeliveryCharge(deliveryCharges));
+      dispatch(setTotalAmount(grandTotal));
+      router.push(`/checkout/uploadScreenshot`);
     }
-    // Redirect user to Stripe Checkout
-    setLoading(false);
+    // if (session.card) {
+    //   router.push(`/checkout/uploadScreenshot?orderId=${session.id}`);
+    // }
+    // setLoading(false);
   };
   return (
     <div className="container mx-auto px-4 py-8">

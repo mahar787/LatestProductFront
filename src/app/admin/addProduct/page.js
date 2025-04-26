@@ -111,6 +111,9 @@ export default function AddProduct() {
         >
           <h2 className="text-2xl font-bold mb-4">Add Product</h2>
           {/* File Upload */}
+          <span className="text-sm text-yellow-500 font-bold">
+            Maximum 10 Mb File Allowed
+          </span>
           <div className="">
             <label className="text-sm font-medium">
               Upload Images Click Here
@@ -119,7 +122,7 @@ export default function AddProduct() {
               type="file"
               multiple
               accept="image/*,application/pdf"
-              className="input-field border"
+              className="input-field border p-2 cursor-pointer"
               onChange={handleFileChange}
             />
             {previewImages.length > 0 &&
